@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Student Marks</title>
 
+  <!-- Supabase Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -173,7 +175,7 @@
       width: auto;
       padding: 5px 12px;
       font-size: 13px;
-      background: #fff;
+      background: white;
       color: #b00020;
       border: 1.5px solid #b00020;
       border-radius: 6px;
@@ -226,129 +228,144 @@
   </div>
 
   <script>
-    var db = supabase.createClient(
-      'https://xtszrbnsfaojoccuecng.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0c3pyYm5zZmFvam9jY3VlY25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTQzOTEsImV4cCI6MjA5Mzc5MDM5MX0.-ETQACuE45_otfdqD5DnsKUtyuTCBOXNJwaekdLt6D4'
-    )
+    const SUPABASE_URL = "https://xtszrbnsfaojoccuecng.supabase.co";
+
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0c3pyYm5zZmFvam9jY3VlY25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTQzOTEsImV4cCI6MjA5Mzc5MDM5MX0.-ETQACuE45_otfdqD5DnsKUtyuTCBOXNJwaekdLt6D4";
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function getGrade(marks) {
-      if (marks >= 75) return 'A'
-      if (marks >= 60) return 'B'
-      if (marks >= 45) return 'C'
-      return 'F'
+      if (marks >= 75) {
+        return "A";
+      } else if (marks >= 60) {
+        return "B";
+      } else if (marks >= 45) {
+        return "C";
+      } else {
+        return "F";
+      }
     }
 
     function showMsg(text, type) {
-      var el = document.getElementById('msg')
-      el.textContent = text
-      el.className = 'msg ' + type
+      const el = document.getElementById("msg");
+      el.textContent = text;
+      el.className = "msg " + type;
 
       setTimeout(function () {
-        el.className = 'msg'
-      }, 3000)
+        el.className = "msg";
+      }, 3000);
     }
 
     async function addStudent() {
-      var roll = document.getElementById('roll').value.trim()
-      var name = document.getElementById('name').value.trim()
-      var marks = parseInt(document.getElementById('marks').value)
+      const roll = document.getElementById("roll").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const marks = parseInt(document.getElementById("marks").value);
 
       if (!roll || !name) {
-        showMsg('Please enter roll number and name.', 'error')
-        return
+        showMsg("Please enter roll number and name.", "error");
+        return;
       }
 
       if (isNaN(marks) || marks < 0 || marks > 100) {
-        showMsg('Please enter valid marks between 0 and 100.', 'error')
-        return
+        showMsg("Please enter valid marks between 0 and 100.", "error");
+        return;
       }
 
-      var result = await db.from('students').insert([
-        {
-          roll_number: roll,
-          name: name,
-          maths: marks
-        }
-      ])
+      const result = await db
+        .from("students")
+        .insert([
+          {
+            roll_number: roll,
+            name: name,
+            maths: marks
+          }
+        ]);
 
       if (result.error) {
-        showMsg('Error: ' + result.error.message, 'error')
+        showMsg("Error: " + result.error.message, "error");
       } else {
-        showMsg('Student saved successfully!', 'success')
+        showMsg("Student saved successfully!", "success");
 
-        document.getElementById('roll').value = ''
-        document.getElementById('name').value = ''
-        document.getElementById('marks').value = ''
+        document.getElementById("roll").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("marks").value = "";
 
-        loadStudents()
+        loadStudents();
       }
     }
 
     async function deleteStudent(id) {
-      if (!confirm('Delete this student?')) return
+      const confirmation = confirm("Delete this student?");
 
-      var result = await db.from('students').delete().eq('id', id)
-
-      if (result.error) {
-        alert('Delete Error: ' + result.error.message)
-        return
+      if (!confirmation) {
+        return;
       }
 
-      loadStudents()
+      const result = await db
+        .from("students")
+        .delete()
+        .eq("id", id);
+
+      if (result.error) {
+        alert("Delete Error: " + result.error.message);
+        return;
+      }
+
+      loadStudents();
     }
 
     async function loadStudents() {
-      var area = document.getElementById('table-area')
+      const area = document.getElementById("table-area");
 
-      var result = await db
-        .from('students')
-        .select('*')
-        .order('roll_number', { ascending: true })
+      const result = await db
+        .from("students")
+        .select("*")
+        .order("roll_number", { ascending: true });
 
       if (result.error) {
-        area.innerHTML = '<p class="empty">Error: ' + result.error.message + '</p>'
-        return
+        area.innerHTML = '<p class="empty">Error: ' + result.error.message + '</p>';
+        return;
       }
 
       if (result.data.length === 0) {
-        area.innerHTML = '<p class="empty">No students yet. Add one above!</p>'
-        return
+        area.innerHTML = '<p class="empty">No students yet. Add one above!</p>';
+        return;
       }
 
-      var html = ''
+      let html = "";
 
-      html += '<table>'
-      html += '<thead>'
-      html += '<tr>'
-      html += '<th>Roll No</th>'
-      html += '<th>Name</th>'
-      html += '<th>Maths</th>'
-      html += '<th>Grade</th>'
-      html += '<th>Delete</th>'
-      html += '</tr>'
-      html += '</thead>'
-      html += '<tbody>'
+      html += "<table>";
+      html += "<thead>";
+      html += "<tr>";
+      html += "<th>Roll No</th>";
+      html += "<th>Name</th>";
+      html += "<th>Maths</th>";
+      html += "<th>Grade</th>";
+      html += "<th>Delete</th>";
+      html += "</tr>";
+      html += "</thead>";
+      html += "<tbody>";
 
-      for (var i = 0; i < result.data.length; i++) {
-        var s = result.data[i]
-        var grade = getGrade(s.maths)
+      for (let i = 0; i < result.data.length; i++) {
+        const s = result.data[i];
+        const grade = getGrade(s.maths);
 
-        html += '<tr>'
-        html += '<td><b>' + s.roll_number + '</b></td>'
-        html += '<td>' + s.name + '</td>'
-        html += '<td>' + s.maths + ' / 100</td>'
-        html += '<td><span class="grade ' + grade + '">' + grade + '</span></td>'
-        html += '<td><button class="del-btn" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></td>'
-        html += '</tr>'
+        html += "<tr>";
+        html += "<td><b>" + s.roll_number + "</b></td>";
+        html += "<td>" + s.name + "</td>";
+        html += "<td>" + s.maths + " / 100</td>";
+        html += '<td><span class="grade ' + grade + '">' + grade + "</span></td>";
+        html += '<td><button class="del-btn" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></td>';
+        html += "</tr>";
       }
 
-      html += '</tbody>'
-      html += '</table>'
+      html += "</tbody>";
+      html += "</table>";
 
-      area.innerHTML = html
+      area.innerHTML = html;
     }
 
-    loadStudents()
+    loadStudents();
   </script>
 
 </body>
