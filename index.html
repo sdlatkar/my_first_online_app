@@ -2,155 +2,354 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Marks</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background: #f0f4ff; color: #1a1a2e; }
-    header { background: #1a1a2e; color: white; padding: 18px 32px; font-size: 20px; font-weight: bold; }
-    .page { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-    .card { background: white; border-radius: 10px; padding: 28px; margin-bottom: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-    .card h2 { font-size: 18px; margin-bottom: 20px; color: #1a1a2e; border-bottom: 2px solid #f0f4ff; padding-bottom: 10px; }
-    label { display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px; margin-top: 14px; }
-    input { width: 100%; padding: 10px 14px; border: 1.5px solid #d0d5e8; border-radius: 7px; font-size: 15px; outline: none; }
-    input:focus { border-color: #3a5bd9; }
-    button { margin-top: 20px; width: 100%; padding: 12px; background: #3a5bd9; color: white; border: none; border-radius: 7px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    button:hover { background: #2a44b0; }
-    .msg { padding: 10px 14px; border-radius: 7px; font-size: 14px; margin-bottom: 14px; display: none; }
-    .msg.success { background: #e6f9f0; color: #1a7a4a; border: 1px solid #a0dbc0; display: block; }
-    .msg.error { background: #fdecea; color: #b00020; border: 1px solid #f0b0ac; display: block; }
-    table { width: 100%; border-collapse: collapse; font-size: 15px; }
-    thead { background: #1a1a2e; color: white; }
-    th, td { padding: 12px 16px; text-align: left; }
-    td { border-bottom: 1px solid #eef0f8; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f8f9ff; }
-    .grade { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-    .grade.A { background: #e6f9f0; color: #1a7a4a; }
-    .grade.B { background: #fff8e1; color: #8a6200; }
-    .grade.C { background: #fff3e0; color: #b05000; }
-    .grade.F { background: #fdecea; color: #b00020; }
-    .del-btn { margin: 0; width: auto; padding: 5px 12px; font-size: 13px; background: #fff; color: #b00020; border: 1.5px solid #b00020; border-radius: 6px; }
-    .del-btn:hover { background: #fdecea; }
-    .empty { text-align: center; color: #999; padding: 30px 0; font-size: 14px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4ff;
+      color: #1a1a2e;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: white;
+      padding: 18px 32px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .page {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #1a1a2e;
+      border-bottom: 2px solid #f0f4ff;
+      padding-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 5px;
+      margin-top: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #d0d5e8;
+      border-radius: 7px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #3a5bd9;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #3a5bd9;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2a44b0;
+    }
+
+    .msg {
+      padding: 10px 14px;
+      border-radius: 7px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .msg.success {
+      background: #e6f9f0;
+      color: #1a7a4a;
+      border: 1px solid #a0dbc0;
+      display: block;
+    }
+
+    .msg.error {
+      background: #fdecea;
+      color: #b00020;
+      border: 1px solid #f0b0ac;
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    thead {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    th,
+    td {
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    td {
+      border-bottom: 1px solid #eef0f8;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8f9ff;
+    }
+
+    .grade {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .grade.A {
+      background: #e6f9f0;
+      color: #1a7a4a;
+    }
+
+    .grade.B {
+      background: #fff8e1;
+      color: #8a6200;
+    }
+
+    .grade.C {
+      background: #fff3e0;
+      color: #b05000;
+    }
+
+    .grade.F {
+      background: #fdecea;
+      color: #b00020;
+    }
+
+    .del-btn {
+      margin: 0;
+      width: auto;
+      padding: 5px 12px;
+      font-size: 13px;
+      background: #fff;
+      color: #b00020;
+      border: 1.5px solid #b00020;
+      border-radius: 6px;
+    }
+
+    .del-btn:hover {
+      background: #fdecea;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      padding: 30px 0;
+      font-size: 14px;
+    }
   </style>
 </head>
+
 <body>
 
-<header>🎓 Student Marks</header>
+  <header>🎓 Student Marks</header>
 
-<div class="page">
-  <div class="card">
-    <h2>Add Student</h2>
-    <div id="msg" class="msg"></div>
-    <label for="roll">Roll Number</label>
-    <input type="text" id="roll" placeholder="e.g. 101" />
-    <label for="name">Student Name</label>
-    <input type="text" id="name" placeholder="e.g. Arjun Patel" />
-    <label for="marks">Maths Marks (out of 100)</label>
-    <input type="number" id="marks" placeholder="e.g. 87" min="0" max="100" />
-    <button onclick="addStudent()">Save Student</button>
-  </div>
+  <div class="page">
 
-  <div class="card">
-    <h2>All Students</h2>
-    <div id="table-area">
-      <p class="empty">Loading...</p>
+    <div class="card">
+      <h2>Add Student</h2>
+
+      <div id="msg" class="msg"></div>
+
+      <label for="roll">Roll Number</label>
+      <input type="text" id="roll" placeholder="e.g. 101" />
+
+      <label for="name">Student Name</label>
+      <input type="text" id="name" placeholder="e.g. Arjun Patel" />
+
+      <label for="marks">Maths Marks (out of 100)</label>
+      <input type="number" id="marks" placeholder="e.g. 87" min="0" max="100" />
+
+      <button onclick="addStudent()">Save Student</button>
     </div>
+
+    <div class="card">
+      <h2>All Students</h2>
+
+      <div id="table-area">
+        <p class="empty">Loading...</p>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<script>
-  var db = supabase.createClient(
-    'https://xtszrbnsfaojoccuecng.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0c3pyYm5zZmFvam9jY3VlY25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTQzOTEsImV4cCI6MjA5Mzc5MDM5MX0.-ETQACuE45_otfdqD5DnsKUtyuTCBOXNJwaekdLt6D4'
-  )
-</script>
+  <script>
+    var db = supabase.createClient(
+      'https://xtszrbnsfaojoccuecng.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0c3pyYm5zZmFvam9jY3VlY25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTQzOTEsImV4cCI6MjA5Mzc5MDM5MX0.-ETQACuE45_otfdqD5DnsKUtyuTCBOXNJwaekdLt6D4'
+    )
 
-  function getGrade(marks) {
-    if (marks >= 75) return 'A'
-    if (marks >= 60) return 'B'
-    if (marks >= 45) return 'C'
-    return 'F'
-  }
-
-  function showMsg(text, type) {
-    var el = document.getElementById('msg')
-    el.textContent = text
-    el.className = 'msg ' + type
-    setTimeout(function() { el.className = 'msg' }, 3000)
-  }
-
-  async function addStudent() {
-    var roll  = document.getElementById('roll').value.trim()
-    var name  = document.getElementById('name').value.trim()
-    var marks = parseInt(document.getElementById('marks').value)
-
-    if (!roll || !name) {
-      showMsg('Please enter roll number and name.', 'error')
-      return
-    }
-    if (isNaN(marks) || marks < 0 || marks > 100) {
-      showMsg('Please enter valid marks between 0 and 100.', 'error')
-      return
+    function getGrade(marks) {
+      if (marks >= 75) return 'A'
+      if (marks >= 60) return 'B'
+      if (marks >= 45) return 'C'
+      return 'F'
     }
 
-    var result = await db.from('students').insert([{
-      roll_number: roll,
-      name: name,
-      maths: marks
-    }])
+    function showMsg(text, type) {
+      var el = document.getElementById('msg')
+      el.textContent = text
+      el.className = 'msg ' + type
 
-    if (result.error) {
-      showMsg('Error: ' + result.error.message, 'error')
-    } else {
-      showMsg('Student saved successfully!', 'success')
-      document.getElementById('roll').value  = ''
-      document.getElementById('name').value  = ''
-      document.getElementById('marks').value = ''
+      setTimeout(function () {
+        el.className = 'msg'
+      }, 3000)
+    }
+
+    async function addStudent() {
+      var roll = document.getElementById('roll').value.trim()
+      var name = document.getElementById('name').value.trim()
+      var marks = parseInt(document.getElementById('marks').value)
+
+      if (!roll || !name) {
+        showMsg('Please enter roll number and name.', 'error')
+        return
+      }
+
+      if (isNaN(marks) || marks < 0 || marks > 100) {
+        showMsg('Please enter valid marks between 0 and 100.', 'error')
+        return
+      }
+
+      var result = await db.from('students').insert([
+        {
+          roll_number: roll,
+          name: name,
+          maths: marks
+        }
+      ])
+
+      if (result.error) {
+        showMsg('Error: ' + result.error.message, 'error')
+      } else {
+        showMsg('Student saved successfully!', 'success')
+
+        document.getElementById('roll').value = ''
+        document.getElementById('name').value = ''
+        document.getElementById('marks').value = ''
+
+        loadStudents()
+      }
+    }
+
+    async function deleteStudent(id) {
+      if (!confirm('Delete this student?')) return
+
+      var result = await db.from('students').delete().eq('id', id)
+
+      if (result.error) {
+        alert('Delete Error: ' + result.error.message)
+        return
+      }
+
       loadStudents()
     }
-  }
 
-  async function deleteStudent(id) {
-    if (!confirm('Delete this student?')) return
-    await db.from('students').delete().eq('id', id)
-    loadStudents()
-  }
+    async function loadStudents() {
+      var area = document.getElementById('table-area')
 
-  async function loadStudents() {
-    var area = document.getElementById('table-area')
-    var result = await db.from('students').select('*').order('roll_number')
+      var result = await db
+        .from('students')
+        .select('*')
+        .order('roll_number', { ascending: true })
 
-    if (result.error) {
-      area.innerHTML = '<p class="empty">Error: ' + result.error.message + '</p>'
-      return
-    }
+      if (result.error) {
+        area.innerHTML = '<p class="empty">Error: ' + result.error.message + '</p>'
+        return
+      }
 
-    if (result.data.length === 0) {
-      area.innerHTML = '<p class="empty">No students yet. Add one above!</p>'
-      return
-    }
+      if (result.data.length === 0) {
+        area.innerHTML = '<p class="empty">No students yet. Add one above!</p>'
+        return
+      }
 
-    var html = '<table><thead><tr><th>Roll No</th><th>Name</th><th>Maths</th><th>Grade</th><th>Delete</th></tr></thead><tbody>'
-    for (var i = 0; i < result.data.length; i++) {
-      var s = result.data[i]
-      var grade = getGrade(s.maths)
+      var html = ''
+
+      html += '<table>'
+      html += '<thead>'
       html += '<tr>'
-      html += '<td><b>' + s.roll_number + '</b></td>'
-      html += '<td>' + s.name + '</td>'
-      html += '<td>' + s.maths + ' / 100</td>'
-      html += '<td><span class="grade ' + grade + '">' + grade + '</span></td>'
-      html += '<td><button class="del-btn" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></td>'
+      html += '<th>Roll No</th>'
+      html += '<th>Name</th>'
+      html += '<th>Maths</th>'
+      html += '<th>Grade</th>'
+      html += '<th>Delete</th>'
       html += '</tr>'
-    }
-    html += '</tbody></table>'
-    area.innerHTML = html
-  }
+      html += '</thead>'
+      html += '<tbody>'
 
-  loadStudents()
-</script>
+      for (var i = 0; i < result.data.length; i++) {
+        var s = result.data[i]
+        var grade = getGrade(s.maths)
+
+        html += '<tr>'
+        html += '<td><b>' + s.roll_number + '</b></td>'
+        html += '<td>' + s.name + '</td>'
+        html += '<td>' + s.maths + ' / 100</td>'
+        html += '<td><span class="grade ' + grade + '">' + grade + '</span></td>'
+        html += '<td><button class="del-btn" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></td>'
+        html += '</tr>'
+      }
+
+      html += '</tbody>'
+      html += '</table>'
+
+      area.innerHTML = html
+    }
+
+    loadStudents()
+  </script>
 
 </body>
 </html>
